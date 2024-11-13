@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void getWeatherData(String city) {
-        String units = "metric"; // в цельсиях
+        String units = "metric"; // в цельсиях //
         String url;
         if (switch_gps.isChecked()){ //если включен
 //            getLocation_gps();
