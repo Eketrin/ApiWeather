@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/back1_dark_blue"
+    android:layout_width="match_parent"
+    android:id="@+id/main"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+<!-- город-->
+    <EditText
+        android:id="@+id/user_field"
+        style="@style/MyTextStyle"
+        android:layout_width="348dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="3dp"
+        android:layout_marginRight="50dp"
+        android:ems="10"
+        android:text="Moscow"
+        android:hint="@string/hint_user_field"
+        android:inputType="text"
+        android:textColor="@color/white" />
+
+
+
+<!--кнопка поиска-->
+    <Button
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="-1dp"
+        android:layout_marginEnd="5dp"
+        android:onClick="GetInfoOfWeather"
+        android:src="@android:drawable/ic_menu_search"
+        android:hint="@string/poisk"
+        android:contentDescription="@string/poisk"
+        tools:ignore="ContentDescription" />
+<!--Переключатель на фаренгейты-->
+
+    <!--основная инфа-->
+
+    <!--Иконка погоды-->
+    <Switch
+        android:id="@+id/switch_farengate"
+        style="@style/MyTextStyle"
+        android:layout_width="79dp"
+        android:layout_height="60dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="43dp"
+        android:layout_marginEnd="7dp"
+        android:checked="false"
+        android:onClick="GetInfoOfWeather"
+        android:text="°F"
+        android:textSize="20dp"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="156dp"
+        android:layout_height="153dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="-13dp"
+        android:layout_marginTop="79dp" />
+    <TextView
+        android:id="@+id/temperature"
+        style="@style/MyTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="133dp"
+        android:layout_marginTop="97dp"
+        android:gravity="center|left"
+        android:text="--,-"
+        android:textSize="60dp" />
+    <TextView
+        android:id="@+id/gradus_far"
+        style="@style/MyTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="17dp"
+        android:layout_marginTop="98dp"
+        android:layout_toEndOf="@+id/temperature"
+        android:gravity="center|left"
+        android:text="°C"
+        android:textSize="60dp" />
+
+
+    <!--gps-->
+
+    <TextView
+        android:id="@+id/description_weather"
+        style="@style/MyTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center|left"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="133dp"
+        android:layout_marginTop="185dp"
+        android:text="-------" />
+
+
+    <!--доп характеристики-->
+
+    <Switch
+        android:id="@+id/switch_gps"
+        style="@style/MyTextStyle"
+        android:layout_width="101dp"
+        android:layout_height="57dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="46dp"
+        android:layout_marginEnd="88dp"
+        android:checked="false"
+        android:text="GPS"
+        android:textSize="20dp"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <LinearLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="253dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView2"
+                style="@style/MyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/montserrat_medium"
+                android:gravity="center|left"
+                android:text="@string/feels_like_" />
+
+            <TextView
+                android:id="@+id/feels_like"
+                style="@style/MyTextStyle"
+                android:layout_width="61dp"
+                android:layout_height="match_parent"
+                android:gravity="center|right"
+                android:text="--" />
+
+            <TextView
+                android:id="@+id/gradus"
+                style="@style/MyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="°C" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView1"
+                style="@style/MyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center|left"
+                android:text="@string/humidity_" />
+
+            <TextView
+                android:id="@+id/humidity"
+                style="@style/MyTextStyle"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:gravity="center|right"
+                android:text="--" />
+
+            <TextView
+                android:id="@+id/prockent"
+                style="@style/MyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="%" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView4"
+                style="@style/MyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center|left"
+                android:text="@string/degrees_" />
+
+            <TextView
+                android:id="@+id/degrees"
+                style="@style/MyTextStyle"
+                android:layout_width="107dp"
+                android:layout_height="match_parent"
+                android:layout_weight="140"
+                android:gravity="center"
+                android:text="----" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView3"
+                style="@style/MyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center|left"
+                android:text="@string/speed_wind_" />
+
+            <TextView
+                android:id="@+id/speed_wind"
+                style="@style/MyTextStyle"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:gravity="center|right"
+                android:text="--" />
+
+            <TextView
+                android:id="@+id/metr_sec"
+                style="@style/MyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="м/с" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView5"
+                style="@style/MyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center|left"
+                android:text="@string/sunrize_" />
+
+            <TextView
+                android:id="@+id/sunrize"
+                style="@style/MyTextStyle"
+                android:layout_width="73dp"
+                android:layout_height="match_parent"
+                android:gravity="center|right"
+                android:text="--.--" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView6"
+                style="@style/MyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center|left"
+                android:text="@string/sunset_" />
+
+            <TextView
+                android:id="@+id/sunset"
+                style="@style/MyTextStyle"
+                android:layout_width="88dp"
+                android:layout_height="match_parent"
+                android:gravity="center|right"
+                android:text="--.--" />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/seven_days"
+        android:layout_width="185dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="198dp"
+        android:onClick="startSevenDayPage"
+        android:text="Прогноз на 7 дней" />
+
+    <Button
+        android:id="@+id/twelve_hours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="197dp"
+        android:layout_marginBottom="117dp"
+        android:onClick="startTwelveHoursPage"
+        android:text="Прогноз на 12 часов" />
+
+
+</RelativeLayout>
