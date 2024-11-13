@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Weather App</string>
+    <string name="hint_user_field">Введите свой город (англ)</string>
+    <string name="null_user_field">Введите свой город (англ)</string>
+    <string name="butt_search">искать</string>
+    <string name="feels_like_">Ощущается как:  </string>
+    <string name="humidity_">Влажность:  </string>
+    <string name="degrees_">Направление ветра:  </string>
+    <string name="speed_wind_">Скорость ветра:  </string>
+    <string name="sunrize_">Восход  </string>
+    <string name="sunset_">Закат  </string>
+    <string name="poisk">Поиск</string>
+
+</resources>
