@@ -29,9 +29,9 @@ import java.util.Date;
 import java.util.TimeZone;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
+//import com.google.android.gms.location.FusedLocationProviderClient;
+//import com.google.android.gms.location.LocationServices;
+//import com.google.android.gms.tasks.OnSuccessListener;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 public class MainActivity extends AppCompatActivity {
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     Switch switch_farengate;
     private double latitude;
     private double longitude;
-    private FusedLocationProviderClient fusedLocationClient;
+//    private FusedLocationProviderClient fusedLocationClient;
 
 
     @SuppressLint("WrongViewCast")
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-//
+
         imageView = findViewById(R.id.imageView);
         temperature = findViewById(R.id.temperature);
         user_field = findViewById(R.id.user_field);
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         sunset = findViewById(R.id.sunset);
         switch_gps = findViewById(R.id.switch_gps);
         switch_farengate = findViewById(R.id.switch_farengate);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
     }
     // Метод для получения информации о погоде
