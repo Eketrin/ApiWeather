@@ -1,74 +1,60 @@
 package com.example.weatherapp;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-
-import com.squareup.picasso.Picasso;
-import android.os.Bundle;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import org.json.JSONException;
-import org.json.JSONObject;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
+
+import com.squareup.picasso.Picasso;
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 
-import android.Manifest;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
-
-
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 public class MainActivity extends AppCompatActivity {
 
-//основные переменные
-    private EditText user_field; //город от пользователя
+    // Основные переменные
+    private EditText user_field; // Город от пользователя
     ImageView imageView;
     TextView description_weather;
-//  String url_icon = "https://openweathermap.org/img/wn/10d@2x.png";
-    TextView temperature; //цифры
+    TextView temperature; // Цифры
     private static final String API_KEY = "855011fda3cc956b0bba12e4a27464bb";
-    boolean is_far_now = false;
-
-    String icon_id;
-
-
     TextView feels_like;
-    TextView humidity; //влажность
-    TextView degrees; //направление ветра
+    TextView humidity; // Влажность
+    TextView degrees; // Направление ветра
     TextView speed_wind;
-    TextView sunrize; //восход
-    TextView sunset; //закат
-//чисто текст
+    TextView sunrize; // Восход
+    TextView sunset; // Закат
     TextView gradus_far;
     TextView gradus;
-    private FusedLocationProviderClient fusedLocationClient;
 
-//      Button searchButton;
-
-    Switch switch_gps;
     Switch switch_farengate;
     private double latitude;
     private double longitude;
+
+    private WeatherApi weatherApi;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -81,16 +67,12 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-//
+
         imageView = findViewById(R.id.imageView);
-//        loadImage(url_icon);
         temperature = findViewById(R.id.temperature);
         user_field = findViewById(R.id.user_field);
-        //текст
         gradus_far = findViewById(R.id.gradus_far);
         gradus = findViewById(R.id.gradus);
-
-
         description_weather = findViewById(R.id.description_weather);
         feels_like = findViewById(R.id.feels_like);
         humidity = findViewById(R.id.humidity);
@@ -98,14 +80,17 @@ public class MainActivity extends AppCompatActivity {
         speed_wind = findViewById(R.id.speed_wind);
         sunrize = findViewById(R.id.sunrize);
         sunset = findViewById(R.id.sunset);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-//        //кнопки
-        switch_gps = findViewById(R.id.switch_gps);
         switch_farengate = findViewById(R.id.switch_farengate);
 
-
+        // Инициализация Retrofit
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        weatherApi = retrofit.create(WeatherApi.class);
     }
+
     // Метод для получения информации о погоде
     public void GetInfoOfWeather(View view) {
         String city = user_field.getText().toString();
@@ -116,103 +101,48 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-    private void displayWeatherData(JSONObject response) {
-        try {
-            //String weatherInfo = response.getJSONArray("weather").getJSONObject(0).getString("description");
-
-            DecimalFormat myFormat = new DecimalFormat("#.#");  // округляем
-
-            double t = response.getJSONObject("main").getDouble("temp");
-            double f_like = response.getJSONObject("main").getDouble("feels_like");
-            if (switch_farengate.isChecked()) { //если switch активен, то переводим в F
-                temperature.setText((myFormat.format(t * 9 / 5 + 32)) + "");
-                feels_like.setText((myFormat.format(f_like * 9 / 5 + 32)) + "");
-
-                gradus_far.setText("°F");
-                gradus.setText("°F");
-            } else {
-                temperature.setText(t + "");
-                feels_like.setText(f_like + "");
-                gradus_far.setText("°C");
-                gradus.setText("°C");
-            }
-//            temperature.setText(response.getJSONObject("main").getDouble("temp")+ "");
-
-            icon_id = response.getJSONArray("weather").getJSONObject(0)
-                    .getString("icon");
-            loadImage("https://openweathermap.org/img/wn/" + icon_id.substring(0, icon_id.length() - 1) +"d@2x.png");
-            description_weather.setText(response.getJSONArray("weather").getJSONObject(0).getString("description")+"");
-
-            humidity.setText(response.getJSONObject("main").getDouble("humidity")+ "");
-            degrees.setText(convertWindDirection(response.getJSONObject("wind").getDouble("deg"))+ "");
-            speed_wind.setText(response.getJSONObject("wind").getDouble("speed")+ "");
-            sunrize.setText(
-                    convertUnixTimeToHourMinute(
-                            response.getJSONObject("sys").getLong("sunrise")
-                            ,response.getInt("timezone") ));
-            sunset.setText(
-                    convertUnixTimeToHourMinute(
-                            response.getJSONObject("sys").getLong("sunset")
-                            ,response.getInt("timezone") ));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(MainActivity.this, "Ошибка получения данных", Toast.LENGTH_SHORT).show();
-        }
-    }
     private void getWeatherData(String city) {
-        String units = "metric"; // в цельсиях
-        String url;
-        if (switch_gps.isChecked()){ //если включен
-            getLocation_gps();
-            url = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude +
-                    "&lon=" + longitude + "&appid=" + API_KEY + "&units=" + units + "&lang=ru";
+        String units = "metric";
+        Call<WeatherResponse> call; // объект запроса
+        // Инициализируем запрос к API погоды для получения данных по названию города
+        call = weatherApi.getWeatherByCity(city, API_KEY, units, "ru");
 
-        }else {
-            url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid="
-                    + API_KEY + "&units=" + units + "&lang=ru";
-        }
+        // Асинхронно выполняем запрос к API
+        call.enqueue(new Callback<WeatherResponse>() {
+            @Override
+            public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
+                // Обрабатываем успешный ответ от API
+                if (response.isSuccessful() && response.body() != null) {
+                    // Если ответ успешный и тело ответа не null, передаем данные в метод для отображения
+                    displayWeatherData(response.body());
+                } else {
+                    // Если произошла ошибка, показываем сообщение об ошибке
+                    Toast.makeText(MainActivity.this, "Ошибка получения данных", Toast.LENGTH_SHORT).show();
+                }
+            }
 
-
-        // https://api.openweathermap.org/data/2.5/weather?q=moscow&appid=855011fda3cc956b0bba12e4a27464bb&units=metric&lang=ru
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
-                    displayWeatherData(response);
-//                    try {
-//                        double latitude = response.getJSONObject("coord").getDouble("lat");
-//                        double longitude = response.getJSONObject("coord").getDouble("lon");
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-                },
-                error -> Toast.makeText(MainActivity.this, "Ошибка сети", Toast.LENGTH_SHORT).show()
-        );
-
-        requestQueue.add(jsonObjectRequest);
+            @Override
+            public void onFailure(Call<WeatherResponse> call, Throwable t) {
+                // Обрабатываем ошибку, возникшую при выполнении запроса
+                Log.e("Retrofit Error", t.getMessage()); // Логируем сообщение об ошибке
+                // Показываем сообщение пользователю о том, что произошла ошибка сети
+                Toast.makeText(MainActivity.this, "Ошибка сети", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    // конвертация из unix в норм формат
+    // Конвертация из Unix-времени в нормальный формат
     public static String convertUnixTimeToHourMinute(long unixTime, int offsetInSeconds) {
-        // Преобразуем Unix-время в миллисекунды
         long timeInMillis = (unixTime + offsetInSeconds) * 1000;
-
-        // Создаем объект Date
         Date date = new Date(timeInMillis);
-
-        // Форматируем только часы и минуты
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        format.setTimeZone(TimeZone.getTimeZone("UTC")); // Устанавливаем часовой пояс на UTC
-
-        // Возвращаем отформатированное время
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
         return format.format(date);
     }
-    // конвертация градусов в текстовое направление
+
+    // Конвертация градусов в текстовое направление
     public static String convertWindDirection(double degrees) {
         String direction;
-
         if (degrees >= 0 && degrees < 22.5) {
             direction = "Север";
         } else if (degrees >= 22.5 && degrees < 67.5) {
@@ -227,139 +157,136 @@ public class MainActivity extends AppCompatActivity {
             direction = "Юго-запад";
         } else if (degrees >= 247.5 && degrees < 292.5) {
             direction = "Запад";
-        } else if (degrees >= 292.5 && degrees < 337.5) {
-            direction = "Северо-запад";
         } else {
-            direction = "Север"; // Для углов 337.5 и выше
+            direction = "Северо-запад";
         }
-
         return direction;
     }
-    // загрузка иконок
+
+    // Загрузка иконок
     private void loadImage(String url) {
         Picasso.get()
                 .load(url)
                 .into(imageView);
     }
 
+    private void displayWeatherData(WeatherResponse response) {
+        try {
+            DecimalFormat myFormat = new DecimalFormat("#.#");  // Округляем
 
-
-    private void getLocation_gps() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            return;
-        }
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, location -> {
-                    if (location != null) {
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                        Toast.makeText(MainActivity.this, "Mестоположение получено",
-                                Toast.LENGTH_SHORT).show();
-
-                    } else {
-                        Toast.makeText(MainActivity.this, "Не удалось получить местоположение",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-
-    //переход на страницы
-    public void startSevenDayPage(View view){
-        Intent intent = new Intent(this, SevenDaysPage.class);
-        startActivity(intent);
-    }
-    public void startTwelveHoursPage(View view){
-        Intent intent = new Intent(this, TwelveHoursPage.class);
-        startActivity(intent);
-    }
-
-
-/*
-    // на кнопке
-    public void GetInfoOfWeather(View view){
-//        если запрос пустой выводим сообщение
-        if (user_field.getText().toString().trim().isEmpty()){
-            Toast.makeText(MainActivity.this, R.string.null_user_field, Toast.LENGTH_LONG).show();
-        }
-        else {
-            String city = user_field.getText().toString();
-            String key = "855011fda3cc956b0bba12e4a27464bb";
-            String units_to_go = "metric"; // imperial
-            // "api.openweathermap.org/data/3.0/onecall?lat=30.489772&lon=-99.771335&units=metric"
-            String url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid="
-                    + key + "&units=" + units_to_go + "&lang=ru";
-            new GetUrlData().execute(url);
-        }
-    }
-    //для получения данных
-    private class GetUrlData extends AsyncTask <String, String, String> {
-        // во время выполнения основного метода
-        protected void onPreExecute(){
-            super.onPreExecute();
-            description_weather.setText("Загрузка...");
-        }
-
-        // тут получаем инфу с инета
-        @Override
-        protected String doInBackground(String... strings) {
-            HttpURLConnection connection = null;
-            BufferedReader reader = null;
-
-            try {
-                // на основе этого объекта обращаемся по адресу
-                URL url = new URL(strings[0]);
-                //открываем само соединение Http
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-
-                //считываем данные из потока
-                InputStream stream = connection.getInputStream();
-                //записываем в норм формат
-                reader = new BufferedReader(new InputStreamReader(stream));
-
-                StringBuffer buffer = new StringBuffer();
-                String line = "";
-
-                //считываем по 1 линии
-                while ((line = reader.readLine()) != null)
-                    buffer.append(line).append("\n");
-                return buffer.toString();
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (connection != null)
-                    connection.disconnect();
-                try {
-                    if (reader != null)
-                        reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            double t = response.main.temp;
+            double f_like = response.main.feels_like;
+            if (switch_farengate.isChecked()) { // Если switch активен, то переводим в F
+                temperature.setText(myFormat.format(t * 9 / 5 + 32) + "");
+                feels_like.setText(myFormat.format(f_like * 9 / 5 + 32) + "");
+                gradus_far.setText("°F");
+                gradus.setText("°F");
+            } else {
+                temperature.setText(t + "");
+                feels_like.setText(f_like + "");
+                gradus_far.setText("°C");
+                gradus.setText("°C");
             }
-            return null;
-        }
 
+            String icon_id = response.weather.get(0).icon;
+            loadImage("https://openweathermap.org/img/wn/" + icon_id.substring(0, icon_id.length() - 1) + "d@2x.png");
+            description_weather.setText(response.weather.get(0).description);
 
-        @SuppressLint("SetTextI18n")
-        @Override
-        protected void onPostExecute(String result){
-            super.onPostExecute(result);
+            humidity.setText(response.main.humidity + " %");
+            degrees.setText(convertWindDirection(response.wind.deg));
+            speed_wind.setText(response.wind.speed + " м/с");
+            sunrize.setText(convertUnixTimeToHourMinute(response.sys.sunrise, response.timezone));
+            sunset.setText(convertUnixTimeToHourMinute(response.sys.sunset, response.timezone));
 
-            try {
-                JSONObject jsonObject = new JSONObject(result);
-
-                temperature.setText(jsonObject.getJSONObject("main").getDouble("temp")+ "");
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(MainActivity.this, "Ошибка получения данных", Toast.LENGTH_SHORT).show();
         }
     }
-*/
+
+
+    // Интерфейс API для Retrofit
+interface WeatherApi {
+    @GET("data/2.5/weather")
+    Call<WeatherResponse> getWeatherByCity(
+            @Query("q") String city,
+            @Query("appid") String apiKey,
+            @Query("units") String units, //метрика
+            @Query("lang") String lang //язык
+    );
 
 }
+
+// Класс модели для ответа от API
+class WeatherResponse {
+    public Main main;
+    public List<Weather> weather;
+    public Wind wind;
+    public Sys sys;
+    public int timezone;
+
+    public class Main {
+        public double temp;
+        public double feels_like;
+        public double humidity;
+    }
+
+    public class Weather {
+        public String description;
+        public String icon;
+    }
+
+    public class Wind {
+        public double speed;
+        public double deg;
+    }
+
+    public class Sys {
+        public long sunrise;
+        public long sunset;
+    }
+}
+}
+/*
+
+HttpURLConnection — это встроенный класс Java, который предоставляет
+функции для выполнения HTTP-запросов. Он позволяет отправлять запросы различных
+типов (GET, POST и др.) и обрабатывать ответы от сервера. Это стандартный способ
+работы с сетью в Java, который не требует установки дополнительных библиотек.
+
+OkHttp — это мощная библиотека для работы с HTTP, разработанная компанией Square.
+Она предлагает удобный интерфейс для выполнения HTTP-запросов и поддерживает асинхронные вызовы,
+автоматическое кэширование, сжатие ответов, а также работу с WebSocket и HTTP/2. OkHttp является
+более современным и эффективным решением по сравнению с HttpURLConnection.
+
+Retrofit — это библиотека, также разработанная Square, которая построена на базе OkHttp.
+Она предназначена для упрощения работы с RESTful API, используя аннотации для определения
+интерфейсов и автоматически преобразуя JSON-ответы в объекты Java. Retrofit поддерживает как
+асинхронные, так и синхронные запросы и легко интегрируется с библиотеками для реактивного
+программирования, такими как RxJava.
+
+Различия между HttpURLConnection, OkHttp и Retrofit заключаются в нескольких ключевых аспектах.
+Во-первых, по сложности использования, HttpURLConnection является более сложным в применении,
+так как требует ручной обработки потоков и ответов, что приводит к большему объему кода для выполнения
+даже простых задач. В то время как OkHttp предлагает более удобный интерфейс, значительно упрощая
+выполнение запросов, а Retrofit еще больше облегчает работу с API, позволяя использовать аннотации
+и автоматически обрабатывая ответы, что сокращает объем кода до минимума.
+
+Во-вторых, в отношении асинхронности, HttpURLConnection не поддерживает асинхронные запросы ,
+ что может привести к блокировке основного потока приложения. Напротив, OkHttp
+полностью поддерживает асинхронные вызовы, что позволяет избежать этой проблемы, а Retrofit
+также поддерживает асинхронные запросы и может интегрироваться с библиотеками для реактивного
+программирования, такими как RxJava, для создания более отзывчивых приложений.
+
+Третьим важным аспектом является обработка данных. HttpURLConnection не предоставляет встроенных
+средств для обработки форматов данных, таких как JSON, что требует дополнительной работы с парсингом.
+OkHttp позволяет обрабатывать данные, но не предлагает автоматического преобразования JSON в объекты
+Java, в то время как Retrofit автоматически преобразует JSON-ответы в объекты Java, что значительно
+упрощает работу с данными.
+
+Наконец, в поддержке современных технологий, HttpURLConnection не поддерживает такие современные
+протоколы, как HTTP/2 и WebSocket. В отличие от него, OkHttp поддерживает эти технологии, что делает
+его более подходящим для современных приложений, а Retrofit, будучи построенным на базе OkHttp, также
+использует эти возможности, упрощая работу с API и обеспечивая поддержку современных стандартов.
+Таким образом, выбор подхода зависит от специфики проекта и требований к функциональности.
+ */
