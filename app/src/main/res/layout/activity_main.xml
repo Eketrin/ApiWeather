@@ -110,19 +110,7 @@
 
     <!--доп характеристики-->
 
-    <Switch
-        android:id="@+id/switch_gps"
-        style="@style/MyTextStyle"
-        android:layout_width="101dp"
-        android:layout_height="57dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="46dp"
-        android:layout_marginEnd="88dp"
-        android:checked="false"
-        android:text="GPS"
-        android:textSize="20dp"
-        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
 
     <LinearLayout
         android:id="@+id/tableLayout"
@@ -210,7 +198,7 @@
             <TextView
                 android:id="@+id/degrees"
                 style="@style/MyTextStyle"
-                android:layout_width="107dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="140"
                 android:gravity="center"
@@ -297,27 +285,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/seven_days"
-        android:layout_width="185dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="28dp"
-        android:layout_marginBottom="198dp"
-        android:onClick="startSevenDayPage"
-        android:text="Прогноз на 7 дней" />
 
-    <Button
-        android:id="@+id/twelve_hours"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="197dp"
-        android:layout_marginBottom="117dp"
-        android:onClick="startTwelveHoursPage"
-        android:text="Прогноз на 12 часов" />
 
 
 </RelativeLayout>

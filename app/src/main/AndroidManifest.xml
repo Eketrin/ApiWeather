@@ -15,12 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WeatherApp"
         tools:targetApi="31">
-        <activity
-            android:name=".TwelveHoursPage"
-            android:exported="false" />
-        <activity
-            android:name=".SevenDaysPage"
-            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
